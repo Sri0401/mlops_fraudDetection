@@ -1,0 +1,23 @@
+name: CI/CD Pipeline
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: pip install fastapi uvicorn kafka-python mlflow pydantic scikit-learn pandas numpy
+      - name: Run tests
+        run: pytest
+      - name: Build Docker image
+        run: docker build -t fraud-api .
+      - name: Run container
+        run: docker run -d -p 8000:8000 fraud-api

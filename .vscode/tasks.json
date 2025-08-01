@@ -1,0 +1,26 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Run FastAPI Server",
+      "type": "shell",
+      "command": "uvicorn api.main:app --reload",
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "Run Kafka Simulation",
+      "type": "shell",
+      "command": "python data_simulation/simulate_transactions.py",
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "Run Model Training",
+      "type": "shell",
+      "command": "python modeling/train_model.py",
+      "group": "build",
+      "problemMatcher": []
+    }
+  ]
+}
