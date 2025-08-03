@@ -1,9 +1,13 @@
 import os
 import subprocess
 import pytest
+from pathlib import Path
 
-# The path to your training script relative to the project root
-TRAIN_SCRIPT_PATH = "src/models/train_model.py"
+# Get the absolute path to the root of the repository
+ROOT_DIR = Path(__file__).resolve().parent.parent
+
+# Use this root path to construct the absolute path to your training script
+TRAIN_SCRIPT_PATH = ROOT_DIR / "src" / "models" / "train_model.py"
 
 @pytest.fixture(scope="session", autouse=True)
 def run_train_script():
@@ -11,9 +15,10 @@ def run_train_script():
     print("Running training script...")
     
     # Run the script and capture stdout and stderr
+    # We use the absolute path we constructed above
     result = subprocess.run(
-        ["python", TRAIN_SCRIPT_PATH], 
-        check=False,  # Set check=False to prevent immediate failure
+        ["python", str(TRAIN_SCRIPT_PATH)],
+        check=False,
         capture_output=True,
         text=True
     )
@@ -25,8 +30,8 @@ def run_train_script():
     print(result.stderr)
     print("--- End of script output ---")
     
-    # Now, check the return code
-    result.check_returncode() # This will raise CalledProcessError if it failed
+    # Check the return code to see if the script failed
+    result.check_returncode()
     
     # Yield control to the tests
     yield
@@ -35,8 +40,9 @@ def run_train_script():
     try:
         os.remove("models/trained_model.joblib")
     except OSError:
-        pass  # Ignore if the file doesn't exist
+        pass
 
 def test_model_file_created():
     """Test to check if the trained model file is created successfully."""
-    assert os.path.exists("models/trained_model.joblib")
+    # Check for the model file at the correct path
+    assert os.path.exists(str(ROOT_DIR / "models" / "trained_model.joblib"))
